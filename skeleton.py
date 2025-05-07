@@ -31,8 +31,6 @@ class Assignment2(object):
             ys.append(y)
         return np.column_stack((xs, ys))
 
-
-
     def experiment_m_range_erm(self, m_first, m_last, step, k, T):
         """Runs the ERM algorithm.
         Calculates the empirical error and the true error.
@@ -47,8 +45,20 @@ class Assignment2(object):
             A two dimensional array that contains the average empirical error
             and the average true error for each m in the range accordingly.
         """
-        # TODO: Implement the loop
-        pass
+        n_steps=max(0, ((m_last - m_first) // step) + 1)
+        return_arr = np.zeros((n_steps, 2)) #in each row there will avg empirical error,avg true error for the according row number of samples
+        return_arr_idx=0
+        for n in range(m_first, m_last+1, step):
+            avg_empirical_error=0.0
+            avg_true_error=0.0
+            for i in range(T):
+                sample_xs,sample_ys = self.sample_from_D(n)
+                erm_intervals,erm_empirical_error=intervals.find_best_interval(sample_xs, sample_ys,k)
+                avg_empirical_error+=(erm_empirical_error/T)
+                avg_true_error+=(self.true_error(erm_intervals)/T)
+            return_arr[return_arr_idx]=[avg_empirical_error, avg_true_error]
+            return_arr_idx+=1
+        return return_arr
 
     def experiment_k_range_erm(self, m, k_first, k_last, step):
         """Finds the best hypothesis for k= 1,2,...,10.
@@ -115,10 +125,11 @@ if __name__ == '__main__':
 
 
 
-
+    '''
     ass = Assignment2()
     ass.experiment_m_range_erm(10, 100, 5, 3, 100)
     ass.experiment_k_range_erm(1500, 1, 10, 1)
     ass.cross_validation(1500)
+    '''
 
 
