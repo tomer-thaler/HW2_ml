@@ -124,15 +124,15 @@ class Assignment2(object):
         sample=self.sample_from_D(m)
         validation_error_per_k = np.zeros(10)
         hypotheses = [None] * 10
+        indices = np.arange(m)
+        np.random.shuffle(indices)
+        split = int(0.8 * m)
+        train = sample[indices[:split]]
+        train = train[train[:, 0].argsort()]  # sorting train by xs
+        validation = sample[indices[split:]]
+        xs_train, ys_train = train[:, 0], train[:, 1]
+        xs_val, ys_val = validation[:, 0], validation[:, 1]
         for k in range(1,11):
-            indices = np.arange(m)
-            np.random.shuffle(indices)
-            split = int(0.8 * m)
-            train = sample[indices[:split]]
-            train = train[train[:, 0].argsort()] #sorting train by xs
-            validation = sample[indices[split:]]
-            xs_train, ys_train = train[:, 0], train[:, 1]
-            xs_val, ys_val = validation[:, 0], validation[:, 1]
             erm_intervals, erm_empirical_error = intervals.find_best_interval(xs_train, ys_train, k)
             hypotheses[k - 1] = erm_intervals
             num_of_validations=len(validation)
@@ -151,11 +151,12 @@ class Assignment2(object):
         plt.xlabel('Number of intervals (k)')
         plt.ylabel('Validation error')
         plt.title(f'Holdout validation error vs k (m={m})')
-        plt.savefig('holdout_validation_error_vs_k.png')
+        plt.savefig('holdout_validation_error_vs_k_2.png')
         plt.show()
 
         print(f'Best k: {best_k}')
-        print(f'Best hypothesis (intervals): {best_hypothesis}')
+        clean_intervals = [(float(a), float(b)) for (a, b) in best_hypothesis]
+        print(f'Best hypothesis (intervals): {clean_intervals}')
 
         return best_k
 
