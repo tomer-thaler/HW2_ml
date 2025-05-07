@@ -96,18 +96,20 @@ class Assignment2(object):
             true_error += self.true_error(erm_intervals)
             record_arr[record_arr_idx] = [empirical_error, true_error]
             record_arr_idx += 1
+        best_idx = np.argmin(record_arr[:, 0])
+        best_k = range(k_first, k_last+1, step)[best_idx]
         #at this point record arr is 2d array with num_of_ks rows and 2 colls: (empirical error,true error)
         #now we will print and save a plot of the errors/ks
         ks = np.arange(k_first, k_last + 1, step)
         plt.plot(ks, record_arr[:, 0], label='Empirical Error')
         plt.plot(ks, record_arr[:, 1], label='True Error')
-        plt.xlabel('Sample size (n)')
+        plt.xlabel('Number of intervals (k)')
         plt.ylabel('Error')
         plt.title(f'ERMs Empirical vs. True error for increasing k values')
         plt.legend()
         plt.savefig('ERMs_empirical_vs_true_error_num_of_intervals(k)_dependency.png')
         plt.show()
-        return
+        return best_k
 
 
 
