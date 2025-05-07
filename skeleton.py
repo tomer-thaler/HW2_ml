@@ -1,6 +1,7 @@
 #################################
 # Your name: Tomer Thaler
 #################################
+from random import sample
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -92,15 +93,15 @@ class Assignment2(object):
             empirical_error = 0.0
             true_error = 0.0
             erm_intervals, erm_empirical_error = intervals.find_best_interval(sample_xs, sample_ys, curr_k)
-            empirical_error += (erm_empirical_error/m)
-            true_error += self.true_error(erm_intervals)
+            empirical_error = (erm_empirical_error/m)
+            true_error = self.true_error(erm_intervals)
             record_arr[record_arr_idx] = [empirical_error, true_error]
             record_arr_idx += 1
         best_idx = np.argmin(record_arr[:, 0])
-        best_k = range(k_first, k_last+1, step)[best_idx]
+        ks = np.arange(k_first, k_last + 1, step)
+        best_k = ks[best_idx]
         #at this point record arr is 2d array with num_of_ks rows and 2 colls: (empirical error,true error)
         #now we will print and save a plot of the errors/ks
-        ks = np.arange(k_first, k_last + 1, step)
         plt.plot(ks, record_arr[:, 0], label='Empirical Error')
         plt.plot(ks, record_arr[:, 1], label='True Error')
         plt.xlabel('Number of intervals (k)')
@@ -120,12 +121,39 @@ class Assignment2(object):
 
         Returns: The best k value (an integer) found by the cross validation algorithm.
         """
-        # TODO: Implement me
-        pass
+        sample=self.sample_from_D(m)
+        validation_error_per_k = np.zeros(10)
+        for k in range(1,11):
+            indices = np.arange(m)
+            np.random.shuffle(indices)
+            split = int(0.8 * m)
+            train = sample[indices[:split]]
+            validation = sample[indices[split:]]
+            xs_train, ys_train = train[:, 0], train[:, 1]
+            xs_val, ys_val = validation[:, 0], validation[:, 1]
+            erm_intervals, erm_empirical_error = intervals.find_best_interval(xs_train, ys_train, k)
+            num_of_validations=len(validation)
+            num_of_wrong_labels=0
+            for i in range(num_of_validations):
+                num_of_wrong_labels+=(self.hipo_guess_for_point(erm_intervals,xs_val[i])!=ys_val[i])
+            validation_error_per_k[k-1] = num_of_wrong_labels/num_of_validations
+
+        best_idx = np.argmin(validation_error_per_k[:10])
+        best_k = best_idx+1
+        # at this point best k holds the k for which the validation error is minimal
+        # now we will print and save a plot of the errors/ks
+        ks = np.arange(1, 11)
+        plt.plot(ks, validation_error_per_k[:10])
+        plt.xlabel('Number of intervals (k)')
+        plt.ylabel('Validation error')
+        plt.title(f'Holdout validation error vs k (m={m})')
+        plt.savefig('holdout_validation_error_vs_k.png')
+        plt.show()
+        return best_k
 
     #################################
     # Place for additional methods
-    def true_error(selfself,intervals):
+    def true_error(self,intervals):
         """Finds the true error for hypothesis given as list of intervals.
         Input: intervals - the list of intervals representing h
         Returns: true error of h
@@ -150,8 +178,15 @@ class Assignment2(object):
             error += false_positive_penalty + false_negative_penalty
         return error
 
-
-
+    def hipo_guess_for_point(self,intervals,point):
+        """An indicator function whether point is in union of intervals, h(point)
+                Input: intervals - the list of intervals representing h, and a point to be considered
+                Returns: h(point) 0/1 value
+                """
+        for region in intervals:
+            if region[0]<=point<=region[1]:
+                return 1
+        return 0
 
     #################################
 
