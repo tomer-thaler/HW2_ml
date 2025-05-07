@@ -72,17 +72,19 @@ class Assignment2(object):
         probs=[0.8,0.1,0.8,0.1,0.8] #prob that y=1 given x in according region
         for id,(region_start,region_end) in enumerate(regions):
             prob1=probs[id]
-            region_length=region_start-region_end
+            region_length=region_end-region_start
             region_intersection_intervals=0.0
+
             for (l,u) in intervals:
                 overlap_start=max(region_start,l)
                 overlap_end=min(region_end,u)
                 if overlap_start<overlap_end:
                     region_intersection_intervals+=overlap_end-overlap_start
-                zero_mapped_area_in_region=region_length-region_intersection_intervals
-                false_positive_penalty=(1-prob1)*region_intersection_intervals
-                false_negative_penalty=prob1*zero_mapped_area_in_region
-                error+=false_positive_penalty+false_negative_penalty
+
+            zero_mapped_area_in_region = region_length - region_intersection_intervals #part where h=0
+            false_positive_penalty = (1 - prob1) * region_intersection_intervals #h=1 but y=0
+            false_negative_penalty = prob1 * zero_mapped_area_in_region #h=0 but y=1
+            error += false_positive_penalty + false_negative_penalty
         return error
 
 
@@ -93,6 +95,8 @@ class Assignment2(object):
 
 if __name__ == '__main__':
     print("start\n")
+    a=Assignment2().true_error([(0.0,0.2)])
+    print(a)
     ass = Assignment2()
     ass.experiment_m_range_erm(10, 100, 5, 3, 100)
     ass.experiment_k_range_erm(1500, 1, 10, 1)
