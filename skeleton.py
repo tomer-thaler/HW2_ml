@@ -66,9 +66,9 @@ class Assignment2(object):
         plt.plot(ms, return_arr[:, 1], label='True Error')
         plt.xlabel('Sample size (n)')
         plt.ylabel('Error')
-        plt.title(f'ERMs Empirical vs. true error with k={k} (average over {T} runs)')
+        plt.title(f'ERMs Empirical vs. True error with k={k} (average over {T} runs)')
         plt.legend()
-        plt.savefig('ERMs_empirical_vs_true_error.png')
+        plt.savefig('ERMs_empirical_vs_true_error_sample_size(n)_dependency.png')
         plt.show()
 
         return return_arr
@@ -78,16 +78,38 @@ class Assignment2(object):
         Plots the empirical and true errors as a function of k.
         Input: m - an integer, the size of the data sample.
                k_first - an integer, the maximum number of intervals in the first experiment.
-               m_last - an integer, the maximum number of intervals in the last experiment.
+               k_last - an integer, the maximum number of intervals in the last experiment.
                step - an integer, the difference between the size of k in each experiment.
 
         Returns: The best k value (an integer) according to the ERM algorithm.
         """
         sample=self.sample_from_D(m)
+        sample_xs, sample_ys = sample[:, 0], sample[:, 1]
         num_of_ks=max(0, ((k_last - k_first) // step) + 1)
+        record_arr = np.zeros((num_of_ks, 2)) #in each row there will avg empirical error,avg true error for the according row number of k
+        record_arr_idx=0
+        for curr_k in range(k_first, k_last+1, step):
+            empirical_error = 0.0
+            true_error = 0.0
+            erm_intervals, erm_empirical_error = intervals.find_best_interval(sample_xs, sample_ys, curr_k)
+            empirical_error += (erm_empirical_error/m)
+            true_error += self.true_error(erm_intervals)
+            record_arr[record_arr_idx] = [empirical_error, true_error]
+            record_arr_idx += 1
+        #at this point record arr is 2d array with num_of_ks rows and 2 colls: (empirical error,true error)
+        #now we will print and save a plot of the errors/ks
+        ks = np.arange(k_first, k_last + 1, step)
+        plt.plot(ks, record_arr[:, 0], label='Empirical Error')
+        plt.plot(ks, record_arr[:, 1], label='True Error')
+        plt.xlabel('Sample size (n)')
+        plt.ylabel('Error')
+        plt.title(f'ERMs Empirical vs. True error for increasing k values')
+        plt.legend()
+        plt.savefig('ERMs_empirical_vs_true_error_num_of_intervals(k)_dependency.png')
+        plt.show()
+        return
 
-        # TODO: Implement the loop
-        pass
+
 
 
     def cross_validation(self, m):
