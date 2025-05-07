@@ -20,8 +20,17 @@ class Assignment2(object):
         Returns: np.ndarray of shape (m,2) :
                 A two dimensional array of size m that contains the pairs where drawn from the distribution P.
         """
-        # TODO: Implement me
-        pass
+        xs=np.sort(np.random.uniform(0, 1, m))
+        ys=[]
+        for x in xs:
+            if (0<=x<=0.2) or (0.4<=x<=0.6) or (0.8<=x<=1.0):
+                p1=0.8
+            else:
+                p1=0.1
+            y=int(np.random.rand()<p1) #y=1 iff a number drawn uni from (0,1) is lower than p1 as needed
+            ys.append(y)
+        return np.column_stack((xs, ys))
+
 
 
     def experiment_m_range_erm(self, m_first, m_last, step, k, T):
@@ -67,6 +76,10 @@ class Assignment2(object):
     #################################
     # Place for additional methods
     def true_error(selfself,intervals):
+        """Finds the true error for hypothesis given as list of intervals.
+        Input: intervals - the list of intervals representing h
+        Returns: true error of h
+        """
         error=0.0
         regions=[(0.0,0.2), (0.2,0.4), (0.4,0.6), (0.6,0.8), (0.8,1.0)]
         probs=[0.8,0.1,0.8,0.1,0.8] #prob that y=1 given x in according region
@@ -95,8 +108,14 @@ class Assignment2(object):
 
 if __name__ == '__main__':
     print("start\n")
-    a=Assignment2().true_error([(0.0,0.2)])
-    print(a)
+    a=Assignment2()
+    print(a.true_error([(0.0,0.2)]))
+    print(a.sample_from_D(3))
+
+
+
+
+
     ass = Assignment2()
     ass.experiment_m_range_erm(10, 100, 5, 3, 100)
     ass.experiment_k_range_erm(1500, 1, 10, 1)
