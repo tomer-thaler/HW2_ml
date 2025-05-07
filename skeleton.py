@@ -123,15 +123,18 @@ class Assignment2(object):
         """
         sample=self.sample_from_D(m)
         validation_error_per_k = np.zeros(10)
+        hypotheses = [None] * 10
         for k in range(1,11):
             indices = np.arange(m)
             np.random.shuffle(indices)
             split = int(0.8 * m)
             train = sample[indices[:split]]
+            train = train[train[:, 0].argsort()] #sorting train by xs
             validation = sample[indices[split:]]
             xs_train, ys_train = train[:, 0], train[:, 1]
             xs_val, ys_val = validation[:, 0], validation[:, 1]
             erm_intervals, erm_empirical_error = intervals.find_best_interval(xs_train, ys_train, k)
+            hypotheses[k - 1] = erm_intervals
             num_of_validations=len(validation)
             num_of_wrong_labels=0
             for i in range(num_of_validations):
@@ -140,6 +143,7 @@ class Assignment2(object):
 
         best_idx = np.argmin(validation_error_per_k[:10])
         best_k = best_idx+1
+        best_hypothesis = hypotheses[best_idx]
         # at this point best k holds the k for which the validation error is minimal
         # now we will print and save a plot of the errors/ks
         ks = np.arange(1, 11)
@@ -149,6 +153,10 @@ class Assignment2(object):
         plt.title(f'Holdout validation error vs k (m={m})')
         plt.savefig('holdout_validation_error_vs_k.png')
         plt.show()
+
+        print(f'Best k: {best_k}')
+        print(f'Best hypothesis (intervals): {best_hypothesis}')
+
         return best_k
 
     #################################
@@ -193,8 +201,10 @@ class Assignment2(object):
 
 if __name__ == '__main__':
     ass = Assignment2()
+    '''
     ass.experiment_m_range_erm(10, 100, 5, 3, 100)
     ass.experiment_k_range_erm(1500, 1, 10, 1)
+    '''
     ass.cross_validation(1500)
 
 
