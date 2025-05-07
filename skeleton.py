@@ -121,6 +121,8 @@ class Assignment2(object):
 
         Returns: The best k value (an integer) found by the cross validation algorithm.
         """
+
+        #we start by splitting the data 80/20 randomly
         sample=self.sample_from_D(m)
         validation_error_per_k = np.zeros(10)
         hypotheses = [None] * 10
@@ -132,6 +134,8 @@ class Assignment2(object):
         validation = sample[indices[split:]]
         xs_train, ys_train = train[:, 0], train[:, 1]
         xs_val, ys_val = validation[:, 0], validation[:, 1]
+        #finished splitting to train and validation, now we will check different k values
+
         for k in range(1,11):
             erm_intervals, erm_empirical_error = intervals.find_best_interval(xs_train, ys_train, k)
             hypotheses[k - 1] = erm_intervals
@@ -140,7 +144,7 @@ class Assignment2(object):
             for i in range(num_of_validations):
                 num_of_wrong_labels+=(self.hipo_guess_for_point(erm_intervals,xs_val[i])!=ys_val[i])
             validation_error_per_k[k-1] = num_of_wrong_labels/num_of_validations
-
+        #finished checking validation errors for different k's now we will locate argmin k
         best_idx = np.argmin(validation_error_per_k[:10])
         best_k = best_idx+1
         best_hypothesis = hypotheses[best_idx]
