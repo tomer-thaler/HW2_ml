@@ -52,12 +52,24 @@ class Assignment2(object):
             avg_empirical_error=0.0
             avg_true_error=0.0
             for i in range(T):
-                sample_xs,sample_ys = self.sample_from_D(n)
+                sample=self.sample_from_D(n)
+                sample_xs,sample_ys = sample[:, 0],sample[:, 1]
                 erm_intervals,erm_empirical_error=intervals.find_best_interval(sample_xs, sample_ys,k)
                 avg_empirical_error+=(erm_empirical_error/T)
                 avg_true_error+=(self.true_error(erm_intervals)/T)
             return_arr[return_arr_idx]=[avg_empirical_error, avg_true_error]
             return_arr_idx+=1
+
+        #at this point computaion are over, now we will show the graphs needed to grasp whats going on
+        ms = np.arange(m_first, m_last + 1, step)
+        plt.plot(ms, return_arr[:, 0], label='Empirical Error')
+        plt.plot(ms, return_arr[:, 1], label='True Error')
+        plt.xlabel('Sample size (n)')
+        plt.ylabel('Error')
+        plt.title(f'ERM with k={k} (avg over {T} trials)')
+        plt.legend()
+        plt.show()
+
         return return_arr
 
     def experiment_k_range_erm(self, m, k_first, k_last, step):
@@ -121,8 +133,7 @@ if __name__ == '__main__':
     a=Assignment2()
     print(a.true_error([(0.0,0.2)]))
     print(a.sample_from_D(3))
-
-
+    print(a.experiment_m_range_erm(3,13,3,2,5))
 
 
     '''
