@@ -83,6 +83,9 @@ class Assignment2(object):
 
         Returns: The best k value (an integer) according to the ERM algorithm.
         """
+        sample=self.sample_from_D(m)
+        num_of_ks=max(0, ((k_last - k_first) // step) + 1)
+
         # TODO: Implement the loop
         pass
 
