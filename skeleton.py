@@ -66,14 +66,36 @@ class Assignment2(object):
 
     #################################
     # Place for additional methods
+    def true_error(selfself,intervals):
+        error=0.0
+        regions=[(0.0,0.2), (0.2,0.4), (0.4,0.6), (0.6,0.8), (0.8,1.0)]
+        probs=[0.8,0.1,0.8,0.1,0.8] #prob that y=1 given x in according region
+        for id,(region_start,region_end) in enumerate(regions):
+            prob1=probs[id]
+            region_length=region_start-region_end
+            region_intersection_intervals=0.0
+            for (l,u) in intervals:
+                overlap_start=max(region_start,l)
+                overlap_end=min(region_end,u)
+                if overlap_start<overlap_end:
+                    region_intersection_intervals+=overlap_end-overlap_start
+                zero_mapped_area_in_region=region_length-region_intersection_intervals
+                false_positive_penalty=(1-prob1)*region_intersection_intervals
+                false_negative_penalty=prob1*zero_mapped_area_in_region
+                error+=false_positive_penalty+false_negative_penalty
+        return error
+
+
 
 
     #################################
 
 
 if __name__ == '__main__':
+    print("start\n")
     ass = Assignment2()
     ass.experiment_m_range_erm(10, 100, 5, 3, 100)
     ass.experiment_k_range_erm(1500, 1, 10, 1)
     ass.cross_validation(1500)
+
 
