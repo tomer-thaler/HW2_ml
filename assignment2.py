@@ -6,8 +6,6 @@ from random import sample
 import numpy as np
 import matplotlib.pyplot as plt
 import intervals
-
-
 class Assignment2(object):
     """Assignment 2 skeleton.
 
@@ -121,7 +119,6 @@ class Assignment2(object):
 
         Returns: The best k value (an integer) found by the cross validation algorithm.
         """
-
         #we start by splitting the data 80/20 randomly
         sample=self.sample_from_D(m)
         validation_error_per_k = np.zeros(10)
@@ -155,13 +152,16 @@ class Assignment2(object):
         plt.xlabel('Number of intervals (k)')
         plt.ylabel('Validation error')
         plt.title(f'Holdout validation error vs k (m={m})')
-        plt.savefig('holdout_validation_error_vs_k_2.png')
+        plt.savefig('holdout_validation_error_num_of_intervals(k)_dependency.png')
         plt.show()
 
+        #before returning the best k,
+        #below is a printing section that prints the best k and its intervals
+        '''
         print(f'Best k: {best_k}')
         clean_intervals = [(float(a), float(b)) for (a, b) in best_hypothesis]
         print(f'Best hypothesis (intervals): {clean_intervals}')
-
+        '''
         return best_k
 
     #################################
@@ -192,7 +192,7 @@ class Assignment2(object):
         return error
 
     def hipo_guess_for_point(self,intervals,point):
-        """An indicator function whether point is in union of intervals, h(point)
+        """An indicator function whether point is in union of intervals e.g h(point)
                 Input: intervals - the list of intervals representing h, and a point to be considered
                 Returns: h(point) 0/1 value
                 """
@@ -206,10 +206,8 @@ class Assignment2(object):
 
 if __name__ == '__main__':
     ass = Assignment2()
-    '''
     ass.experiment_m_range_erm(10, 100, 5, 3, 100)
     ass.experiment_k_range_erm(1500, 1, 10, 1)
-    '''
     ass.cross_validation(1500)
 
 
